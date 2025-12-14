@@ -22,62 +22,10 @@ Messages are ASCII, semicolon-terminated, and comma-separated: `id,value;`
 
 Processing sketches expect messages terminated with `;` and will trim and sanitize incoming strings (ignore boot messages from the ESP).
 
-## Quick start (Windows)
-1. Connect the ESP32/board to your PC via USB.
-2. In Arduino IDE:
-   - Select the correct board and COM port.
-   - Open and upload `lab1-4.ino` (or `touch1_millis.ino` for calibration, `touch2.ino` for a simple demo).
-3. Install Processing (https://processing.org/) and the Processing Sound library (Sketch → Import Library → Add Library → search "sound").
-4. Open `music_card_nosolution.pde` (or `lab3.pde`) in Processing. Update the serial port variable if needed (search `portName = "COM10"` and change to your COM port or use `Serial.list()` to auto-detect).
-5. Run the Processing sketch. Touching the physical card should trigger the on-screen controls and playback behavior.
-
-## Wiring and hardware notes
-- The Arduino sketches use `touchRead()` (ESP32 API). If you are using a different microcontroller, adapt the touch-sensing code accordingly.
-- Pin mapping in the sketches uses digital-style numbers (e.g., touch pins 5,6,7 and slider pins 9–13 in `lab1-4.ino`); match these to your ESP32 module's TOUCH-capable pins.
-- For slider segments, use one sender and multiple receiver TOUCH pins as recommended in the lab instructions.
-
-## Lab instructions (condensed)
-These are the core tasks required by the course labs (Lab 1-3 and Lab 1-4):
-
-- Lab 1-3 — Send touch data to Processing and implement the digital music card UI. Deliverables: Processing sketches that display the three touch buttons and the music card application, plus a short demo video.
-- Lab 1-4 — Implement the touch slider: read 5 segments, calibrate min/max per segment, compute an interpolated slider value (0–1), send it as `3,<value>;`, and connect it to the music player's volume control. Deliverables: Arduino code, Processing code with slider, photo of wiring, and a short demo video.
-
-Detailed steps are available in the sketches' comments (`lab1-4.ino`, `music_card_nosolution.pde`) and the folder contains calibration/demo files (`touch1_millis.ino`, demo videos) to help complete the labs.
-
-## Troubleshooting
-- Serial port busy: close the Arduino Serial Monitor before running Processing — only one application can open the COM port at a time.
-- If Processing doesn't detect mouse drag on Windows (Processing 4), use a mousePressed state workaround.
-- If `card.png` is missing, copy or rename `front.jpg` or `lab1-4.jpg` to `card.png` in the Processing sketch folder.
-
-## Next actions (optional)
-- Copy an existing image to `card.png` so Processing loads artwork automatically.
-- Add a small `examples/` folder with simplified sketches that auto-detect serial ports.
-- Add a short wiring diagram (can be generated from `ckt_design.pdf`) and embed it in this README.
-
-If you want any of these applied, tell me which one and I'll make the change.
-# Music Card PCB GUI Full
-
-This repository contains an Arduino / Processing project for a touch-controlled "music card" interface (touch buttons and sliders) that communicates over Serial (baud 9600). The project includes Arduino sketches that read capacitive touch inputs (using touchRead(), likely on an ESP32) and Processing sketches that provide a graphical UI and audio controls.
-
-
 ## Quick summary
 - Hardware: ESP/Arduino-compatible board with capacitive touch pins (touchRead), wired to the touch pads on the PCB. Serial connection to a host computer is used for UI control and debugging.
 - Serial: 9600 baud, messages terminated with `;` and use a comma-separated format like `id,value;` or simple `id,1;` for button presses.
 - Processing UI: Uses `Serial` from Processing to open `COM10` (changeable in code) and listens for messages from the Arduino; plays/pauses music and controls volume.
-
-## Serial protocol (derived from code)
-- Messages end with `;` and are like `n,m;` where:
-  - `n` is a control id:
-    - `0` = back / previous
-    - `1` = play/pause
-    - `2` = forward / next
-    - `3` = volume (value is a float between 0 and 1 or similar)
-  - Examples:
-    - `0,1;` — button 0 pressed (previous)
-    - `1,1;` — button 1 pressed (play/pause)
-    - `3,0.5;` — set volume to 0.5
-
-The Processing sketches also handle some variants (they trim, remove parentheses, etc.) and ignore ESP boot messages.
 
 ## Files in this folder
 Below are the main files found in the project root with a short description extracted from the code:
@@ -114,31 +62,8 @@ Include these assets alongside the Processing sketch if you want the GUI to disp
 
 4. Run the Processing sketch. When the Arduino sends messages like `1,1;` the GUI will act (play/pause, previous, next, volume).
 
-## Dependencies / Notes
-- Arduino: the sketches use `touchRead()` which is available on ESP32 boards. If you are using a different board, `touchRead()` may not exist or have different pin mappings.
-- Processing: the sketches use the Processing Serial library. `music_card_nosolution.pde` references an `Audio` class; make sure that class (and supporting libraries) is present in the sketch folder or Processing libraries path.
-- Serial port: default in code is `COM10` and baud `9600` — change to match your machine.
 
-## Wiring hints (derived from project assets)
-- Touch pins in code use pins 5, 6, and 7 for touch buttons and pins 9-13 for touch sliders. These pin numbers match the `touchRead()` calls in the Arduino code (but the actual board layout may differ depending on your ESP32 module and PCB).
-- Check `arduino_connection_pic.jpg` for how the board was wired to USB/serial and any level-shifters or connectors.
-
-
-
-## Next steps I can help with
-- Add a `card.png` asset or adapt the Processing sketch to use one of the included images.
-- Create a wiring diagram or simplified schematic in README using the provided `ckt_design.pdf`.
-- Add a short troubleshooting section (common issues: wrong COM port, wrong board, touchRead thresholds, missing Processing Audio class).
-
----
-If you'd like, I can embed selected images from the folder into this README or adjust the Processing port settings automatically. Which would you like me to do next?
-## Lab instructions included from your pasted document
-
-Below are the course lab instructions you provided (Lab 1-3 and Lab 1-4). I copied and condensed them here so the repository README serves as the single place for the assignment steps, deliverables, and notes. Where possible I reference the existing files in this folder.
-
----
-
-## Lab 1-3: Sending Touch Data to Processing (due 09/25)
+## Sending Touch Data to Processing 
 
 Goal: Connect the physical printed music card to Processing so that touching a physical pad lights the corresponding digital touch button in Processing and plays the associated song.
 
@@ -168,29 +93,11 @@ Serial protocol used by the lab code
   - `2,1;` — touch sensor 2 pressed (next)
   - `3,0.5;` — slider/volume ID 3 set to 0.5 (used in Lab 1-4)
 
-Deliverables (Lab 1-3)
-- Processing code (.pde) for serial communication that displays the three touch buttons (e.g., `lab3.pde`).
-- Processing code (.pde) of the music card application (e.g., `music_card_nosolution.pde`).
-- A short video (MP4/MOV, ≤1 min, ≤20 MB) showing the printed music card used to play/pause and go previous/next.
-
-Notes / hints from the lab text
-- If you get a "port busy" error, close the Arduino Serial Monitor—only one program can open a serial port at a time.
-- Use `myPort.available()` to check characters available; the lab suggests checking for at least 4 characters (e.g., `0,1;`) before calling `readStringUntil(';')`.
-- Processing code should ignore ESP boot messages (they contain "ESP-ROM").
-
----
-
-## Lab 1-4: Sensing Input from a Touch Slider (due before next lab section)
+## Sensing Input from a Touch Slider (due before next lab section)
 
 Goal: Build the slider circuit and code to compute an overall slider value (0.0-1.0) from 5 touch segments and send that value over Serial as `3,<value>;`. Use that value in Processing to control music volume.
 
-Deliverables (Lab 1-4)
-- Photo of slider circuit connected to the printed slider and ESP microcontroller.
-- Arduino code (.ino) that serializes the slider value.
-- Processing code (.pde) of the music card application with the slider integrated (e.g., updated `music_card_nosolution.pde`).
-- A short video (MP4/MOV, ≤1 min, ≤20 MB) showing the printed slider adjusting volume.
-
-Steps (condensed and mapped to the repo)
+Steps :
 1. Build the slider hardware: the slider is multiple touch pads placed next to each other. Wire them with one sender pin and multiple receiver pins (TOUCHx pins recommended on the ESP32). DO NOT use the pin labelled pin0 (TOUCH1) as a receiver.
 2. Extend microcontroller code to read all 5 slider segments and print raw values to Serial for calibration. Example format for plotting: `slider1,slider2,slider3,slider4,slider5` on a line.
   - Use `touchRead(pin)` for each segment (see `lab1-4.ino` in repo for an implementation that reads 5 sliders and uses thresholds).
